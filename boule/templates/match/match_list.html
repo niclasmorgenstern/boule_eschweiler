@@ -1,0 +1,47 @@
+{% extends '../base.html' %}
+
+{% block content %}
+<div class="w-full p-4">
+    <div class="flex justify-between items-center mb-16">
+        <h2 class="font-bold text-4xl">Partien</h2>
+        <a href="{% url 'match-add' %}">
+            <div class="flex items-center py-1 px-2 text-white bg-black rounded">
+                <i data-lucide="calendar-plus" class="w-4 h-4 mr-2"></i>
+                Hinzufügen
+            </div>
+        </a>
+    </div>
+    <div class="space-y-4 flex-col">
+        {% for match in object_list %}
+        <div>
+            <a href="{% url 'match-edit' match.id %}">
+                <div class="text-lg text-center p-4 border-2 hover:bg-gray-100">
+                    <div class="text-center mb-4">{{ match.date }}</div>
+                    <div class="grid grid-cols-3">
+                        <div>
+                            {% for player_match in match.player_matches.all %}
+                            {% if player_match.team == 1 %}
+                            <div>{{ player_match.player.name }}</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="flex items-center justify-center font-semibold space-x-4">
+                            <div class="text-center">{{ match.team_1_points }}</div>
+                            <span>:</span>
+                            <div class="text-center">{{ match.team_2_points }}</div>
+                        </div>
+                        <div>
+                            {% for player_match in match.player_matches.all %}
+                            {% if player_match.team == 2 %}
+                            <div>{{ player_match.player.name }}</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

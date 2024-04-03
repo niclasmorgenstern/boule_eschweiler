@@ -1,0 +1,22 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="w-full p-4">
+    <h2 class="font-bold text-4xl mb-16">Spieler hinzufügen</h2>
+
+    <div class="flex justify-center font-semibold text-lg text-green-600">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+
+    <form action="" method="post" class="flex-col space-y-8">
+        {% csrf_token %}
+        <div>
+            {{ form.name|as_crispy_field }}
+        </div>
+        <input type="submit" value="Speichern" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
+    </form>
+</div>
+{% endblock %}

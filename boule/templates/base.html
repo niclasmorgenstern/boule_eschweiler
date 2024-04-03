@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+
+<head>
+    {% block title %}
+    {% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="flex justify-center ">
+        <div class="container max-w-[800px]">
+            <nav class="flex space-x-8 justify-center py-8">
+                <a href="{% url 'ranking' %}" class="hover:text-blue-600">Rangliste</a>
+                <a href="{% url 'match-list' %}" class="hover:text-blue-600">Partien</a>
+                <a href="{% url 'player-list' %}" class="hover:text-blue-600">Spieler</a>
+            </nav>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

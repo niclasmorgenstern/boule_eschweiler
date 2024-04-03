@@ -1,0 +1,81 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="w-full p-4">
+    <h2 class="font-bold text-4xl mb-8 text-center">Partie hinzufügen</h2>
+
+    <div class="flex justify-center">
+        <nav class="flex justify-between mb-8 font-semibold w-full md:w-1/2">
+            <a href="{% url 'match-add' %}?format=1v1" class="hover:text-blue-600">Tête-à-tête</a>
+            <a href="{% url 'match-add' %}?format=2v2" class="hover:text-blue-600">Doublette</a>
+            <a href="{% url 'match-add' %}?format=3v3" class="hover:text-blue-600">Triplette</a>
+        </nav>
+    </div>
+
+    <div class="w-full border-b-2 border-gray-300 mb-8"></div>
+
+    <div class="flex justify-center font-semibold text-lg text-green-600">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    <div class="flex justify-center font-semibold text-lg text-red-600">
+        {{ form.non_field_errors }}
+    </div>
+
+    <form action="" method="post" class="flex-col space-y-8">
+        {% csrf_token %}
+        <div class="md:grid md:grid-cols-2 md:gap-4 space-y-8 md:space-y-0">
+            <div>
+                <h2 class="text-center font-bold text-xl mb-4 md:mb-8">Team 1</h2>
+                <div>
+                    {{ form.team_1_player_1|as_crispy_field }}
+                </div>
+                {% if format == "2v2" or format == "3v3" %}
+                <div>
+                    {{ form.team_1_player_2|as_crispy_field }}
+                </div>
+                {% endif %}
+                {% if format == "3v3" %}
+                <div>
+                    {{ form.team_1_player_3|as_crispy_field }}
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="text-center font-bold text-xl mb-4 md:mb-8">Team 2</h2>
+                <div>
+                    {{ form.team_2_player_1|as_crispy_field }}
+                </div>
+                {% if format == "2v2" or format == "3v3" %}
+                <div>
+                    {{ form.team_2_player_2|as_crispy_field }}
+                </div>
+                {% endif %}
+                {% if format == "3v3" %}
+                <div>
+                    {{ form.team_2_player_3|as_crispy_field }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <h2 class="text-center font-bold text-xl mb-4 md:mb-8">Punkte</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {{ form.team_1_points|as_crispy_field }}
+                </div>
+                <div>
+                    {{ form.team_2_points|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="">
+            {{ form.date|as_crispy_field }}
+        </div>
+        <input type="submit" value="Speichern" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
+    </form>
+
+</div>
+{% endblock %}
