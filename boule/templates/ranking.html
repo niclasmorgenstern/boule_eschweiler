@@ -5,14 +5,30 @@
     <h2 class="font-bold text-4xl mb-8 text-center">Rangliste</h2>
     <h4 class="font-semibold text-2xl mb-16 text-center">Boule - Eschweiler</h4>
     <div class="space-y-8">
-        <div class="grid grid-cols-2 text-lg font-bold">
-            <div class="text-center">Spieler</div>
+        <div class="grid grid-cols-5 text-lg font-bold  items-center">
+            <div class="pl-4">#</div>
+            <div class="text-start col-span-3">Spieler</div>
             <div class="text-center">Punkte</div>
         </div>
-        {% for player, score in scores %}
-        <div class="grid grid-cols-2 text-lg">
-            <div class="text-center">{{ player.name }}</div>
-            <div class="text-center">{{ score }}</div>
+        {% for rank, info in ranking.items %}
+        <div class="grid grid-cols-5 text-lg items-center min-h-10">
+            <div class="">
+                {% if rank == 1 %}
+                <div class="flex items-center justify-center bg-[#d4af37] w-10 h-10 rounded-full">{{ rank }}</div>
+                {% elif rank == 2 %}
+                <div class="flex items-center justify-center bg-[#c0c0c0] w-10 h-10 rounded-full">{{ rank }}</div>
+                {% elif rank == 3 %}
+                <div class="flex items-center justify-center bg-[#cd7f32] w-10 h-10 rounded-full">{{ rank }}</div>
+                {% else %}
+                <div class="pl-4">{{ rank }}</div>
+                {% endif %}
+            </div>
+            <div class="text-start col-span-3">
+                <a href="{% url 'player-stats' info.player.pk %}" class="hover:border-b-2 border-black">
+                    {{ info.player.name }}
+                </a>
+            </div>
+            <div class="text-center">{{ info.score }}</div>
         </div>
         {% endfor %}
     </div>
