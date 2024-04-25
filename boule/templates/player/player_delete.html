@@ -1,18 +1,16 @@
 {% extends '../base.html' %}
 
 {% block content %}
-<div class="w-full p-4">
-    <h2 class="font-bold text-4xl mb-16">Spieler löschen</h2>
+<h2 class="font-bold uppercase md:text-xl">Spieler löschen</h2>
 
-    <div>
-        <p>Sicher, dass <span class="font-bold">{{ player.name }}</span> endgültig gelöscht werden soll? Alle
-            Spielergebnisse gehen für diesen Spieler
-            verloren!</p>
-    </div>
-
-    <form action="" method="post" class="flex-col space-y-8">
-        {% csrf_token %}
-        <input type="submit" value="Löschen" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
-    </form>
+<div>
+    <p>Sicher, dass <span class="font-bold">{{ player.name }}</span> endgültig gelöscht werden soll? Alle
+        Spielergebnisse gehen für diesen Spieler
+        verloren!</p>
 </div>
+
+<form action="" method="post" class="flex-col space-y-8">
+    {% csrf_token %}
+    <input type="submit" value="Löschen" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
+</form>
 {% endblock %}

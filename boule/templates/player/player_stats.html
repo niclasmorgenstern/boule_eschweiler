@@ -1,47 +1,46 @@
 {% extends '../base.html' %}
 
 {% block content %}
-<div class="w-full p-4">
-    <h2 class="font-bold text-4xl mb-16">{{ player.name }} Statistik</h2>
-    <div class="md:grid md:grid-cols-2 gap-4 space-y-2">
-        <div class="grid grid-cols-3 gap-2 md:gap-4">
-            <div class="flex flex-col space-y-4 p-2 md:p-4 border border-gray-300 rounded-lg">
-                <h4 class="font-semibold text-sm md:text-base">
-                    Spiele
-                </h4>
-                <div>{{ player_stats.games }}</div>
-            </div>
-            <div class="flex flex-col space-y-4 p-2 md:p-4 border border-gray-300 rounded-lg">
-                <h4 class="font-semibold text-sm md:text-base">
-                    Siege
-                </h4>
-                <div>{{ player_stats.wins }}</div>
-            </div>
-            <div class="flex flex-col space-y-4 p-2 md:p-4 border border-gray-300 rounded-lg">
-                <h4 class="font-semibold text-sm md:text-base">
-                    Niederlagen
-                </h4>
-                <div>{{ player_stats.losses }}</div>
-            </div>
+<div>
+    <h2 class="font-bold text-4xl">{{ player.name }} Statistik</h2>
+</div>
+<div class="md:grid md:grid-cols-2 gap-4 space-y-4 md:space-y-0">
+    <div class="grid grid-cols-3 gap-4">
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ player_stats.games }}</div>
+            <h4 class="uppercase text-sm">
+                Spiele
+            </h4>
         </div>
-        <div class="grid grid-cols-2 gap-2 md:gap-4">
-            <div class="flex flex-col space-y-4 p-2 md:p-4 border border-gray-300 rounded-lg">
-                <h4 class="font-semibold text-sm md:text-base">
-                    Punkteverhältnis
-                </h4>
-                <div>{{ player_stats.points_plus }} : {{ player_stats.points_minus }}</div>
-            </div>
-            <div class="flex flex-col space-y-4 p-2 md:p-4 border border-gray-300 rounded-lg">
-                <h4 class="font-semibold text-sm md:text-base">
-                    Gesamtpunkte
-                </h4>
-                <div>{{ player_stats.score }}</div>
-            </div>
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ player_stats.wins }}</div>
+            <h4 class="uppercase text-sm">
+                Gewonnen
+            </h4>
         </div>
-        <div>
-
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ player_stats.losses }}</div>
+            <h4 class="uppercase text-sm">
+                Verloren
+            </h4>
         </div>
     </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ player_stats.points_plus }} : {{ player_stats.points_minus }}</div>
+            <h4 class="uppercase text-sm">
+                Punkteverhältnis
+            </h4>
+        </div>
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ player_stats.score }}</div>
+            <h4 class="uppercase text-sm">
+                Ranglistenpunkte
+            </h4>
+        </div>
+    </div>
+    <div>
 
+    </div>
 </div>
 {% endblock %}

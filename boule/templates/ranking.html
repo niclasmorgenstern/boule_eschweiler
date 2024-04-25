@@ -1,36 +1,35 @@
 {% extends 'base.html' %}
+{% load static %}
+
 
 {% block content %}
-<div class="w-full p-4">
-    <h2 class="font-bold text-4xl mb-8 text-center">Rangliste</h2>
-    <h4 class="font-semibold text-2xl mb-16 text-center">Boule - Eschweiler</h4>
-    <div class="space-y-8">
-        <div class="grid grid-cols-5 text-lg font-bold  items-center">
-            <div class="pl-4">#</div>
-            <div class="text-start col-span-3">Spieler</div>
-            <div class="text-center">Punkte</div>
-        </div>
-        {% for rank, info in ranking.items %}
-        <div class="grid grid-cols-5 text-lg items-center min-h-10">
-            <div class="">
-                {% if rank == 1 %}
-                <div class="flex items-center justify-center bg-[#d4af37] w-10 h-10 rounded-full">{{ rank }}</div>
-                {% elif rank == 2 %}
-                <div class="flex items-center justify-center bg-[#c0c0c0] w-10 h-10 rounded-full">{{ rank }}</div>
-                {% elif rank == 3 %}
-                <div class="flex items-center justify-center bg-[#cd7f32] w-10 h-10 rounded-full">{{ rank }}</div>
-                {% else %}
-                <div class="pl-4">{{ rank }}</div>
-                {% endif %}
-            </div>
-            <div class="text-start col-span-3">
-                <a href="{% url 'player-stats' info.player.pk %}" class="hover:border-b-2 border-black">
-                    {{ info.player.name }}
-                </a>
-            </div>
-            <div class="text-center">{{ info.score }}</div>
-        </div>
-        {% endfor %}
+<div class="flex flex-col justify-center items-center space-y-4">
+    <img src="{% static 'images/ranking.png' %}" alt="" class="w-16 h-16">
+    <h2 class="font-bold uppercase md:text-xl">Eschweiler Rangliste</h2>
+</div>
+<div class="space-y-4">
+    <div class="flex font-semibold items-center space-x-4 md:space-x-8">
+        <div class="p-1 w-10 h-10 flex justify-center items-center">#</div>
+        <div class="p-1 text-start flex-grow flex items-center">Spieler</div>
+        <div class="p-1 w-[60px] justify-center flex items-center">Punkte</div>
     </div>
+    {% for rank, info in ranking.items %}
+    <a href="{% url 'player-stats' info.player.id %}"
+        class="flex text-lg font-semibold items-center space-x-4 md:space-x-8 rounded hover:bg-gray-100">
+        <div class="p-1 w-10 h-10 flex justify-center items-center">
+            {% if rank == 1 %}
+            <img src="{% static 'images/first-place.png' %}" alt="">
+            {% elif rank == 2 %}
+            <img src="{% static 'images/second-place.png' %}" alt="">
+            {% elif rank == 3 %}
+            <img src="{% static 'images/third-place.png' %}" alt="">
+            {% else %}
+            {{ rank }}
+            {% endif %}
+        </div>
+        <div class="p-1 text-start text-lg grow h-6 flex items-center">{{ info.player.name }}</div>
+        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ info.score }}</div>
+    </a>
+    {% endfor %}
 </div>
 {% endblock %}

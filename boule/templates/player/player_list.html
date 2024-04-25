@@ -1,21 +1,20 @@
 {% extends '../base.html' %}
 
 {% block content %}
-<div class="w-full p-4">
-    <div class="flex justify-between items-center mb-16">
-        <h2 class="font-bold text-4xl">Spieler</h2>
-        <a href="{% url 'player-add' %}">
-            <div class="flex items-center py-1 px-2 text-white bg-black rounded">
-                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
-                Hinzufügen
-            </div>
-        </a>
-    </div>
-    <ul class="space-y-4">
-        {% for player in object_list %}
-        <li class="text-lg text-center"><a href="{% url 'player-edit' player.pk %}"
-                class="hover:border-b-2 border-black">{{ player.name }}</a></li>
-        {% endfor %}
-    </ul>
+<div class="flex justify-between items-center">
+    <h2 class="font-bold uppercase text-xl">Spieler</h2>
+    <a href="{% url 'player-add' %}">
+        <div class="flex items-center py-1 px-2 text-white bg-black rounded text-sm">
+            <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+            Hinzufügen
+        </div>
+    </a>
 </div>
+<ul class="space-y-4">
+    {% for player in object_list %}
+    <li class="text-lg text-center">
+        <a href="{% url 'player-edit' player.pk %}" class="hover:border-b-2 border-black">{{ player.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

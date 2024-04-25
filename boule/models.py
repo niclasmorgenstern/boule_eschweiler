@@ -21,6 +21,10 @@ class Match(models.Model):
     def __str__(self):
         return f"{self.team_1_points} - {self.team_2_points}, ({self.date})"
 
+    def get_winner(self):
+        if self.team_1_points > self.team_2_points:
+            return "team1"
+
 
 class PlayerMatch(models.Model):
 

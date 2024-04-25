@@ -2,27 +2,27 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="w-full p-4">
-    <div class="flex justify-between items-center mb-16">
-        <h2 class="font-bold text-4xl">{{ player.name }} editieren</h2>
-        <a href="{% url 'player-delete' player.pk %}">
-            <div class="flex items-center py-1 px-2 text-white bg-black rounded">
-                <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
-                Löschen
-            </div>
-        </a>
-    </div>
-
-    {% for message in messages %}
-    {{ message }}
-    {% endfor %}
-
-    <form action="" method="post" class="flex-col space-y-8">
-        {% csrf_token %}
-        <div>
-            {{ form.name|as_crispy_field }}
+<div class="flex justify-between items-center">
+    <h2 class="font-bold uppercase md:text-xl">{{ player.name }} editieren</h2>
+    <a href="{% url 'player-delete' player.pk %}">
+        <div class="flex items-center py-1 px-2 text-white bg-black rounded text-sm">
+            <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
+            Löschen
         </div>
-        <input type="submit" value="Speichern" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
-    </form>
+    </a>
 </div>
+
+{% for message in messages %}
+<div class="flex justify-center font-semibold text-lg text-green-600">
+    {{ message }}
+</div>
+{% endfor %}
+
+<form action="" method="post" class="flex-col space-y-8">
+    {% csrf_token %}
+    <div>
+        {{ form.name|as_crispy_field }}
+    </div>
+    <input type="submit" value="Speichern" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
+</form>
 {% endblock %}
