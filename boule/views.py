@@ -5,61 +5,48 @@ from django.views.generic import ListView, CreateView
 from django.urls import reverse
 from django.contrib import messages
 import math
+from collections import defaultdict
+from datetime import datetime
 
 from .models import Player, Match, PlayerMatch
 from .forms import PlayerForm, MatchForm
+from .services import calc_ranking, months
 
 
 class RankingView(View):
 
     def get(self, request, *args, **kwargs):
 
+        month = request.GET.get("month")
+        year = request.GET.get("year")
+
         players = Player.objects.prefetch_related("player_matches__match")
-        scores = {}
-        for player in players:
 
-            wins = 0
-            losses = 0
-            points_plus = 1
-            points_minus = 1
-            player_matches = player.player_matches.all()
+        if month != "" and month is not None:
+            players = players.filter(player_matches__match__date__month=month)
+        if year != "" and year is not None:
+            players = players.filter(player_matches__match__date__year=year)
 
-            for player_match in player_matches:
+        ranking = calc_ranking(players, month=month, year=year)
 
-                team_1_points = player_match.match.team_1_points
-                team_2_points = player_match.match.team_2_points
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
 
-                if player_match.team == 1:
-
-                    points_plus += team_1_points
-                    points_minus += team_2_points
-                    if team_1_points > team_2_points:
-                        wins += 1
-                    else:
-                        losses += 1
-
-                elif player_match.team == 2:
-
-                    points_plus += team_2_points
-                    points_minus += team_1_points
-                    if team_2_points > team_1_points:
-                        wins += 1
-                    else:
-                        losses += 1
-
-            score = math.ceil((wins * 2 - losses) * (points_plus / points_minus))
-            scores[player] = score
-
-        final_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        ranking = {
-            rank: {"player": player, "score": score}
-            for rank, (player, score) in enumerate(final_scores, 1)
-        }
-
-        return render(request, "ranking.html", {"ranking": ranking})
+        return render(
+            request,
+            "ranking.html",
+            {
+                "ranking": ranking,
+                "months": months,
+                "years": years,
+                "selected_month": months.get(month),
+                "selected_year": year,
+            },
+        )
 
 
 class PlayerListView(ListView):
+
     model = Player
     template_name = "player/player_list.html"
     ordering = ["name"]
@@ -182,13 +169,46 @@ class PlayerStatView(View):
         )
 
 
-class MatchListView(ListView):
-    model = Match
-    template_name = "match/match_list.html"
+class MatchListView(View):
 
-    def get_queryset(self):
-        queryset = Match.objects.prefetch_related("player_matches").order_by("-date")
-        return queryset
+    def get(self, request, *args, **kwargs):
+
+        player = request.GET.get("player")
+        month = request.GET.get("month")
+        year = request.GET.get("year")
+
+        players = Player.objects.all()
+        matches = Match.objects.prefetch_related("player_matches__player").order_by(
+            "-date"
+        )
+
+        if month != "" and month is not None:
+            matches = matches.filter(date__month=month)
+        if year != "" and year is not None:
+            matches = matches.filter(date__year=year)
+        if player != "" and player is not None:
+            matches = matches.filter(player_matches__player__name__iexact=player)
+
+        matches_by_date = defaultdict(list)
+        for match in matches:
+            matches_by_date[match.date].append(match)
+
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
+
+        return render(
+            request,
+            "match/match_list.html",
+            {
+                "matches_by_date": dict(matches_by_date),
+                "players": players,
+                "months": months,
+                "years": years,
+                "selected_player": player,
+                "selected_month": months.get(month),
+                "selected_year": year,
+            },
+        )
 
 
 class MatchCreateView(View):

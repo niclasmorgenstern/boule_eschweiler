@@ -7,6 +7,43 @@
     <img src="{% static 'images/ranking.png' %}" alt="" class="w-16 h-16">
     <h2 class="font-bold uppercase md:text-xl">Eschweiler Rangliste</h2>
 </div>
+<form action="{% url 'ranking' %}" method="get" class="flex space-x-2 md:space-x-4 justify-end items-end">
+    <div>
+        <label for="month" class="block text-gray-700 text-sm mb-1">Monat</label>
+        <select name="month" id="month"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            <option value="">---</option>
+            {% for number, name in months.items %}
+            <option value={{number}}>{{name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="year" class="block text-gray-700 text-sm mb-1">Jahr</label>
+        <select name="year" id="year"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            <option value="">---</option>
+            {% for year in years %}
+            <option value={{year}}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input type="submit" value="Filtern"
+        class="py-1 px-2 h-[31px] bg-black text-sm text-white rounded hover:cursor-pointer">
+</form>
+<div class="flex justify-center space-x-4 font-semibold">
+    {% if selected_month %}
+    <div>
+        {{selected_month}}
+    </div>
+    {% endif %}
+    {% if selected_year %}
+    <div>
+        {{selected_year}}
+    </div>
+    {% endif %}
+</div>
+{% if ranking %}
 <div class="space-y-4">
     <div class="flex font-semibold items-center space-x-4 md:space-x-8">
         <div class="p-1 w-10 h-10 flex justify-center items-center">#</div>
@@ -32,4 +69,7 @@
     </a>
     {% endfor %}
 </div>
+{% else %}
+<div class="w-full text-center">Für diesen Zeitraum ist leider keine Rangliste vorhanden.</div>
+{% endif %}
 {% endblock %}

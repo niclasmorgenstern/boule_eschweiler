@@ -1,4 +1,5 @@
 {% extends '../base.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="flex justify-between items-center">
@@ -10,36 +11,91 @@
         </div>
     </a>
 </div>
-<div class="space-y-4 flex-col">
-    {% for match in object_list %}
+<div>
+    <form action="{% url 'match-list' %}" method="get" class="flex space-x-2 md:space-x-4 justify-end items-end">
+        <div>
+            <label for="player" class="block text-gray-700 text-sm mb-1">Spieler</label>
+            <select name="player" id="player"
+                class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+                <option value="">---</option>
+                {% for player in players %}
+                <option value={{ player.name }}>{{ player.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="month" class="block text-gray-700 text-sm mb-1">Monat</label>
+            <select name="month" id="month"
+                class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+                <option value="">---</option>
+                {% for number, name in months.items %}
+                <option value={{number}}>{{name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="year" class="block text-gray-700 text-sm mb-1">Jahr</label>
+            <select name="year" id="year"
+                class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+                <option value="">---</option>
+                {% for year in years %}
+                <option value={{ year }}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Filtern"
+            class="py-1 px-2 h-[31px] bg-black text-sm text-white rounded hover:cursor-pointer">
+    </form>
+</div>
+<div class="flex justify-center space-x-4 font-semibold">
+    {% if selected_player %}
     <div>
-        <a href="{% url 'match-edit' match.id %}">
-            <div class="text-lg text-center p-4 border-2 rounded hover:bg-gray-100">
-                <div class="text-center mb-4">{{ match.date }}</div>
-                <div class="grid grid-cols-3">
-                    <div>
-                        {% for player_match in match.player_matches.all %}
-                        {% if player_match.team == 1 %}
-                        <div>{{ player_match.player.name }}</div>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="flex items-center justify-center font-semibold space-x-4">
-                        <div class="text-center">{{ match.team_1_points }}</div>
-                        <span>:</span>
-                        <div class="text-center">{{ match.team_2_points }}</div>
-                    </div>
-                    <div>
-                        {% for player_match in match.player_matches.all %}
-                        {% if player_match.team == 2 %}
-                        <div>{{ player_match.player.name }}</div>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
+        {{selected_player}}
+    </div>
+    {% endif %}
+    {% if selected_month %}
+    <div>
+        {{selected_month}}
+    </div>
+    {% endif %}
+    {% if selected_year %}
+    <div>
+        {{selected_year}}
+    </div>
+    {% endif %}
+</div>
+<div class="space-y-4 flex flex-col">
+    {% for date, matches in matches_by_date.items %}
+    <h2>{{ date }}</h2>
+    {% for match in matches %}
+    <a href="{% url 'match-edit' match.id %}">
+        <div class="text-lg text-center p-4 border-2 rounded hover:bg-gray-100">
+            <div class="grid grid-cols-3">
+                <div>
+                    {% for player_match in match.player_matches.all %}
+                    {% if player_match.team == 1 %}
+                    <div>{{ player_match.player.name }}</div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="flex items-center justify-center font-semibold space-x-4">
+                    <div class="text-center">{{ match.team_1_points }}</div>
+                    <span>:</span>
+                    <div class="text-center">{{ match.team_2_points }}</div>
+                </div>
+                <div>
+                    {% for player_match in match.player_matches.all %}
+                    {% if player_match.team == 2 %}
+                    <div>{{ player_match.player.name }}</div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-        </a>
-    </div>
+        </div>
+    </a>
+    {% endfor %}
+    {% empty %}
+    <div class="w-full text-center">Für diesen Zeitraum sind leider keine Partien vorhanden.</div>
     {% endfor %}
 </div>
 {% endblock %}
