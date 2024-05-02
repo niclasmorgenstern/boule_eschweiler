@@ -87,8 +87,8 @@ class MatchForm(forms.ModelForm):
             "team_2_points": "Team 2",
         }
         widgets = {
-            "team_1_points": forms.Select(choices=[(i, str(i)) for i in range(1, 14)]),
-            "team_2_points": forms.Select(choices=[(i, str(i)) for i in range(1, 14)]),
+            "team_1_points": forms.Select(choices=[(i, str(i)) for i in range(14)]),
+            "team_2_points": forms.Select(choices=[(i, str(i)) for i in range(14)]),
         }
 
     def _validate_unique_players(self, cleaned_data):

@@ -3,7 +3,29 @@ from collections import defaultdict
 
 
 def calc_ranking_score(wins, losses, points_plus, points_minus):
-    return math.ceil(max((wins * 2 - losses), 1) * min((points_plus / points_minus), 2))
+    return math.ceil((wins * 2 - losses) * min((points_plus / points_minus), 2))
+
+
+def calc_win_bonus(loser_score):
+    if loser_score == 0:
+        return 0.5
+    elif loser_score == 1:
+        return 0.25
+    elif loser_score == 2:
+        return 0.1
+    else:
+        return 0
+
+
+def calc_loss_bonus(loser_score):
+    if loser_score == 12:
+        return 0.5
+    elif loser_score == 11:
+        return 0.25
+    elif loser_score == 10:
+        return 0.1
+    else:
+        return 0
 
 
 def calc_player_stats(player, month=None, year=None):
@@ -12,6 +34,7 @@ def calc_player_stats(player, month=None, year=None):
     losses = 0
     points_plus = 1
     points_minus = 1
+    bonus_points = 0
     player_matches = player.player_matches.all()
 
     if month != "" and month is not None:
@@ -31,21 +54,27 @@ def calc_player_stats(player, month=None, year=None):
 
             points_plus += team_1_points
             points_minus += team_2_points
+
             if team_1_points > team_2_points:
                 wins += 1
+                bonus_points += calc_win_bonus(team_2_points)
             else:
                 losses += 1
+                bonus_points += calc_loss_bonus(team_1_points)
 
         elif player_match.team == 2:
 
             points_plus += team_2_points
             points_minus += team_1_points
+
             if team_2_points > team_1_points:
                 wins += 1
+                bonus_points += calc_win_bonus(team_1_points)
             else:
                 losses += 1
+                bonus_points += calc_loss_bonus(team_2_points)
 
-    score = calc_ranking_score(wins, losses, points_plus, points_minus)
+    score = calc_ranking_score(wins, losses, points_plus, points_minus) + bonus_points
 
     player_stats = {
         "games": wins + losses,
@@ -88,7 +117,6 @@ def calc_month_ranking(players, month=None, year=None):
         rank: {"player": player, "score": score}
         for rank, (player, score) in enumerate(final_scores, 1)
     }
-    print(ranking_month)
     return ranking_month
 
 

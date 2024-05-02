@@ -136,7 +136,6 @@ class PlayerCreateView(View):
                 f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name'] if form.cleaned_data['last_name'] else ''} wurde hinzugefügt!",
             )
             return HttpResponseRedirect(self.request.path_info)
-        print(form.errors)
         return render(request, "player/player_add.html", {"form": form})
 
 
@@ -163,7 +162,6 @@ class PlayerEditView(View):
                 f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name'] if form.cleaned_data['last_name'] else ''} wurde editiert!",
             )
             return HttpResponseRedirect(self.request.path_info)
-        print(form.errors)
         return render(
             request, "player/player_edit.html", {"form": form, "player": player}
         )
