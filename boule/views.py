@@ -4,13 +4,19 @@ from django.views import View
 from django.views.generic import ListView, CreateView
 from django.urls import reverse
 from django.contrib import messages
-import math
+from django.db.models import Q
 from collections import defaultdict
 from datetime import datetime
 
 from .models import Player, Match, PlayerMatch
 from .forms import PlayerForm, MatchForm
-from .services import calc_ranking, months
+from .services import (
+    calc_ranking,
+    calc_month_ranking,
+    calc_year_ranking,
+    calc_player_stats,
+    months,
+)
 
 
 class RankingView(View):
@@ -45,11 +51,71 @@ class RankingView(View):
         )
 
 
+class RankingMonthView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        month = request.GET.get("month", datetime.now().month)
+        year = request.GET.get("year", datetime.now().year)
+        players = Player.objects.prefetch_related("player_matches__match")
+        players = players.filter(
+            Q(player_matches__match__date__month=month)
+            & Q(player_matches__match__date__year=year)
+        )
+        if players:
+            ranking = calc_month_ranking(players, month=month, year=year)
+        else:
+            ranking = {}
+
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
+
+        return render(
+            request,
+            "ranking/month.html",
+            {
+                "ranking": ranking,
+                "months": months,
+                "years": years,
+                "selected_month": months.get(str(month)),
+                "selected_year": year,
+            },
+        )
+
+
+class RankingYearView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        year = request.GET.get("year", datetime.now().year)
+        players = Player.objects.prefetch_related("player_matches__match")
+        players = players.filter(Q(player_matches__match__date__year=year))
+
+        if players:
+            ranking = calc_year_ranking(players, year=year)
+        else:
+            ranking = {}
+
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
+
+        return render(
+            request,
+            "ranking/year.html",
+            {
+                "ranking": ranking,
+                "months": months,
+                "years": years,
+                "selected_year": year,
+            },
+        )
+
+
 class PlayerListView(ListView):
 
     model = Player
     template_name = "player/player_list.html"
-    ordering = ["name"]
+    ordering = ["first_name", "last_name"]
 
 
 class PlayerCreateView(View):
@@ -66,10 +132,11 @@ class PlayerCreateView(View):
         if form.is_valid():
             form.save()
             messages.success(
-                self.request, f"{form.cleaned_data['name']} wurde hinzugefügt!"
+                self.request,
+                f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name'] if form.cleaned_data['last_name'] else ''} wurde hinzugefügt!",
             )
             return HttpResponseRedirect(self.request.path_info)
-
+        print(form.errors)
         return render(request, "player/player_add.html", {"form": form})
 
 
@@ -92,10 +159,11 @@ class PlayerEditView(View):
         if form.is_valid():
             form.save()
             messages.success(
-                self.request, f"{form.cleaned_data['name']} wurde editiert!"
+                self.request,
+                f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name'] if form.cleaned_data['last_name'] else ''} wurde editiert!",
             )
             return HttpResponseRedirect(self.request.path_info)
-
+        print(form.errors)
         return render(
             request, "player/player_edit.html", {"form": form, "player": player}
         )
@@ -104,6 +172,7 @@ class PlayerEditView(View):
 class PlayerDeleteView(View):
 
     def get(self, request, *args, **kwargs):
+
         player = Player.objects.get(pk=self.kwargs["pk"])
         return render(request, "player/player_delete.html", {"player": player})
 
@@ -122,45 +191,9 @@ class PlayerStatView(View):
             pk=self.kwargs["pk"]
         )
 
-        wins = 0
-        losses = 0
-        points_plus = 1
-        points_minus = 1
-        player_matches = player.player_matches.all()
-
-        for player_match in player_matches:
-
-            team_1_points = player_match.match.team_1_points
-            team_2_points = player_match.match.team_2_points
-
-            if player_match.team == 1:
-
-                points_plus += team_1_points
-                points_minus += team_2_points
-                if team_1_points > team_2_points:
-                    wins += 1
-                else:
-                    losses += 1
-
-            elif player_match.team == 2:
-
-                points_plus += team_2_points
-                points_minus += team_1_points
-                if team_2_points > team_1_points:
-                    wins += 1
-                else:
-                    losses += 1
-
-        score = math.ceil((wins * 2 - losses) * (points_plus / points_minus))
-
-        player_stats = {
-            "games": wins + losses,
-            "wins": wins,
-            "losses": losses,
-            "points_plus": points_plus - 1,
-            "points_minus": points_minus - 1,
-            "score": score,
-        }
+        player_stats = calc_player_stats(
+            player, month=datetime.now().month, year=datetime.now().year
+        )
 
         return render(
             request,
@@ -187,7 +220,10 @@ class MatchListView(View):
         if year != "" and year is not None:
             matches = matches.filter(date__year=year)
         if player != "" and player is not None:
-            matches = matches.filter(player_matches__player__name__iexact=player)
+            matches = matches.filter(
+                Q(player_matches__player__first_name__iexact=player.split(",")[0])
+                & Q(player_matches__player__last_name__iexact=player.split(",")[1])
+            )
 
         matches_by_date = defaultdict(list)
         for match in matches:
@@ -204,7 +240,7 @@ class MatchListView(View):
                 "players": players,
                 "months": months,
                 "years": years,
-                "selected_player": player,
+                "selected_player": player.replace(",", " ").strip() if player else None,
                 "selected_month": months.get(month),
                 "selected_year": year,
             },
@@ -316,7 +352,7 @@ class MatchEditView(View):
             messages.success(self.request, "Partie wurde editiert!")
             return HttpResponseRedirect(self.request.path_info)
 
-        return render(request, "match/match_edit.html", {"form": form})
+        return render(request, "match/match_edit.html", {"form": form, "match": match})
 
 
 class MatchDeleteView(View):

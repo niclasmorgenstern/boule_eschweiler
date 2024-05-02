@@ -1,21 +1,26 @@
 import math
+from collections import defaultdict
 
 
 def calc_ranking_score(wins, losses, points_plus, points_minus):
-    return math.ceil((wins * 2 - losses) * (points_plus / points_minus))
+    return math.ceil(max((wins * 2 - losses), 1) * min((points_plus / points_minus), 2))
 
 
 def calc_player_stats(player, month=None, year=None):
+
     wins = 0
     losses = 0
     points_plus = 1
     points_minus = 1
     player_matches = player.player_matches.all()
 
-    if month is not None:
+    if month != "" and month is not None:
         player_matches = player_matches.filter(match__date__month=month)
-    if year is not None:
+    if year != "" and year is not None:
         player_matches = player_matches.filter(match__date__year=year)
+
+    if not player_matches:
+        return None
 
     for player_match in player_matches:
 
@@ -68,6 +73,40 @@ def calc_ranking(players, month=None, year=None):
     }
 
     return ranking
+
+
+def calc_month_ranking(players, month=None, year=None):
+    scores = {}
+
+    for player in players:
+        player_stats = calc_player_stats(player, month=month, year=year)
+        if player_stats:
+            scores[player] = player_stats["score"]
+
+    final_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    ranking_month = {
+        rank: {"player": player, "score": score}
+        for rank, (player, score) in enumerate(final_scores, 1)
+    }
+    print(ranking_month)
+    return ranking_month
+
+
+def calc_year_ranking(players, year=None):
+
+    ranking_year = defaultdict(int)
+    for month in range(12):
+        ranking_month = calc_month_ranking(players, month=month, year=year)
+        if ranking_month:
+            month_max_points = len(ranking_month)
+            for rank, info in ranking_month.items():
+                ranking_year[info["player"]] += month_max_points + 1 - rank
+    ranking_year = sorted(ranking_year.items(), key=lambda x: x[1], reverse=True)
+    ranking_year = {
+        rank: {"player": player, "score": score}
+        for rank, (player, score) in enumerate(ranking_year, 1)
+    }
+    return ranking_year
 
 
 months = {

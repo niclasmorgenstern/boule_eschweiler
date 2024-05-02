@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import (
     RankingView,
+    RankingMonthView,
+    RankingYearView,
     PlayerListView,
     PlayerCreateView,
     PlayerEditView,
@@ -13,7 +15,9 @@ from .views import (
 )
 
 urlpatterns = [
-    path("", RankingView.as_view(), name="ranking"),
+    path("", RankingMonthView.as_view(), name="ranking"),
+    path("month/", RankingMonthView.as_view(), name="ranking-month"),
+    path("year/", RankingYearView.as_view(), name="ranking-year"),
     path("player/", PlayerListView.as_view(), name="player-list"),
     path("player/add/", PlayerCreateView.as_view(), name="player-add"),
     path("player/<int:pk>/edit/", PlayerEditView.as_view(), name="player-edit"),

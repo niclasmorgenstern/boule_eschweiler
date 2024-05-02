@@ -1,0 +1,78 @@
+{% extends 'ranking/ranking.html' %}
+{% load static %}
+
+{% block ranking %}
+<div class="flex justify-center space-x-8 font-semibold uppercase"">
+    <h2 class=" border-b-2 border-black">
+    Monat
+    </h2>
+    <a href="{% url 'ranking-year' %}">
+        <h2 class="hover:hover:text-blue-600">
+            Jahr
+        </h2>
+    </a>
+</div>
+<form action="{% url 'ranking-month' %}" method="get" class="flex space-x-2 md:space-x-4 justify-end items-end">
+    <div>
+        <select name="month" id="month"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            {% for number, name in months.items %}
+            {% if name == selected_month %}
+            <option value={{number}} selected>{{name}}</option>
+            {% else %}
+            <option value={{number}}>{{name}}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <select name="year" id="year"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            {% for year in years %}
+            <option value={{year}}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input type="submit" value="Filtern"
+        class="py-1 px-2 h-[31px] bg-black text-sm text-white rounded hover:cursor-pointer">
+</form>
+<div class="flex justify-center space-x-4 font-semibold">
+    <div>
+        {{selected_month}}
+    </div>
+    <div>
+        {{selected_year}}
+    </div>
+</div>
+{% if ranking %}
+<div class="space-y-4">
+    <div class="flex font-semibold items-center space-x-4 md:space-x-8">
+        <div class="p-1 w-10 h-10 flex justify-center items-center">#</div>
+        <div class="p-1 text-start flex-grow flex items-center">Spieler</div>
+        <div class="p-1 w-[60px] justify-center flex items-center">Punkte</div>
+    </div>
+    {% for rank, info in ranking.items %}
+    <a href="{% url 'player-stats' info.player.id %}"
+        class="flex text-lg font-semibold items-center space-x-4 md:space-x-8 rounded hover:bg-gray-100">
+        <div class="p-1 w-10 h-10 flex justify-center items-center">
+            {% if rank == 1 %}
+            <img src="{% static 'images/first-place.png' %}" alt="">
+            {% elif rank == 2 %}
+            <img src="{% static 'images/second-place.png' %}" alt="">
+            {% elif rank == 3 %}
+            <img src="{% static 'images/third-place.png' %}" alt="">
+            {% else %}
+            {{ rank }}
+            {% endif %}
+        </div>
+        <div class="p-1 text-start text-lg grow h-6 flex items-center">
+            {{ info.player.first_name }} {{ info.player.last_name|slice:":1" }}
+        </div>
+        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ info.score }}</div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="w-full text-center">Für diesen Zeitraum ist leider noch keine Rangliste vorhanden.</div>
+{% endif %}
+{% endblock %}

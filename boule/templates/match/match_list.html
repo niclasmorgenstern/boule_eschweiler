@@ -19,7 +19,9 @@
                 class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
                 <option value="">---</option>
                 {% for player in players %}
-                <option value={{ player.name }}>{{ player.name }}</option>
+                <option value="{{ player.first_name }},{{ player.last_name }}">
+                    {{ player.first_name }} {{ player.last_name|slice:":1" }}
+                </option>
                 {% endfor %}
             </select>
         </div>
@@ -74,7 +76,7 @@
                 <div>
                     {% for player_match in match.player_matches.all %}
                     {% if player_match.team == 1 %}
-                    <div>{{ player_match.player.name }}</div>
+                    <div>{{ player_match.player.first_name }} {{ player_match.player.last_name|slice:":1" }}</div>
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -86,7 +88,7 @@
                 <div>
                     {% for player_match in match.player_matches.all %}
                     {% if player_match.team == 2 %}
-                    <div>{{ player_match.player.name }}</div>
+                    <div>{{ player_match.player.first_name }} {{ player_match.player.last_name|slice:":1" }}</div>
                     {% endif %}
                     {% endfor %}
                 </div>

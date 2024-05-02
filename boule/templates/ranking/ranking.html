@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="flex flex-col justify-center items-center space-y-4">
+    <img src="{% static 'images/ranking.png' %}" alt="" class="w-16 h-16">
+    <h2 class="font-bold uppercase md:text-xl">Eschweiler Rangliste</h2>
+</div>
+
+{% block ranking %}
+{% endblock %}
+
+{% endblock %}

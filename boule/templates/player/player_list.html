@@ -13,7 +13,9 @@
 <ul class="space-y-4">
     {% for player in object_list %}
     <li class="text-lg text-center">
-        <a href="{% url 'player-edit' player.pk %}" class="hover:border-b-2 border-black">{{ player.name }}</a>
+        <a href="{% url 'player-edit' player.pk %}" class="hover:border-b-2 border-black">
+            {{ player.first_name }} {{ player.last_name }}
+        </a>
     </li>
     {% endfor %}
 </ul>

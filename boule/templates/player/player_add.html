@@ -9,11 +9,19 @@
     {{ message }}
 </div>
 {% endfor %}
+<div class="flex justify-center font-semibold text-lg text-red-600">
+    {{ form.non_field_errors }}
+</div>
 
 <form action="" method="post" class="flex-col space-y-8">
     {% csrf_token %}
-    <div>
-        {{ form.name|as_crispy_field }}
+    <div class="md:grid md:grid-cols-2 md:gap-4">
+        <div>
+            {{ form.first_name|as_crispy_field }}
+        </div>
+        <div>
+            {{ form.last_name|as_crispy_field }}
+        </div>
     </div>
     <input type="submit" value="Speichern" class="py-2 px-4 bg-black text-white rounded hover:cursor-pointer">
 </form>
