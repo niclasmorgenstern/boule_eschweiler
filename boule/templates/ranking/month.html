@@ -53,15 +53,15 @@
     </div>
     {% for rank, players in ranking.items %}
     {% for player, score in players %}
-    <a href="{% url 'player-stats' player.id %}"
+    <a href="{% url 'player-stats-month' player.id %}"
         class="flex text-lg font-semibold items-center space-x-4 md:space-x-8 rounded hover:bg-gray-100">
         <div class="p-1 w-10 h-10 flex justify-center items-center">
             {% if rank == 1 %}
-            <img src="{% static 'images/first-place.png' %}" alt="">
+            <img src="{% static 'images/first-place-color.png' %}" alt="">
             {% elif rank == 2 %}
-            <img src="{% static 'images/second-place.png' %}" alt="">
+            <img src="{% static 'images/second-place-color.png' %}" alt="">
             {% elif rank == 3 %}
-            <img src="{% static 'images/third-place.png' %}" alt="">
+            <img src="{% static 'images/third-place-color.png' %}" alt="">
             {% else %}
             {{ rank }}
             {% endif %}

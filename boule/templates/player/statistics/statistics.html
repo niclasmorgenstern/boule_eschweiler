@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="flex flex-col justify-center items-center space-y-4">
+    <img src="{% static 'images/analytics-color.png' %}" alt="" class="w-16 h-16">
+    <h2 class="font-bold uppercase text-xl">{{ player.first_name }} {{ player.last_name|slice:":1" }} - Statistik
+    </h2>
+</div>
+
+{% block statistics %}
+{% endblock %}
+
+{% endblock %}

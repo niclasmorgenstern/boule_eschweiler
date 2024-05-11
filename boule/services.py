@@ -167,6 +167,15 @@ def calc_year_ranking_v2(players, month=None, year=None):
     return ranking
 
 
+def get_player_ranking(target_player, ranking):
+
+    for rank, info in ranking.items():
+        for player, score in info:
+            if player == target_player:
+                return (rank, score)
+    return (None, None)
+
+
 months = {
     "1": "Januar",
     "2": "Februar",

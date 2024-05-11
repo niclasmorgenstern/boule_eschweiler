@@ -1,0 +1,110 @@
+{% extends 'player/statistics/statistics.html' %}
+{% load static %}
+
+{% block statistics %}
+<div class="flex justify-center space-x-8 font-semibold uppercase"">
+    <h2 class=" border-b-2 border-black">
+    Monat
+    </h2>
+    <a href="{% url 'player-stats-year' player.id %}">
+        <h2 class="hover:hover:text-blue-600">
+            Jahr
+        </h2>
+    </a>
+</div>
+<form action="{% url 'player-stats-month' player.id %}" method="get"
+    class="flex space-x-2 md:space-x-4 justify-end items-end">
+    <div>
+        <select name="month" id="month"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            {% for number, name in months.items %}
+            {% if name == selected_month %}
+            <option value={{number}} selected>{{name}}</option>
+            {% else %}
+            <option value={{number}}>{{name}}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <select name="year" id="year"
+            class="bg-white focus:outline-none border border-gray-300 rounded py-1 px-2 block w-full appearance-none leading-normal text-gray-700 text-sm">
+            {% for year in years %}
+            <option value={{year}}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input type="submit" value="Filtern"
+        class="py-1 px-2 h-[31px] bg-black text-sm text-white rounded hover:cursor-pointer">
+</form>
+<div class="flex justify-center space-x-4 font-semibold">
+    <div>
+        {{selected_month}}
+    </div>
+    <div>
+        {{selected_year}}
+    </div>
+</div>
+{% if statistics %}
+<div class="flex justify-center">
+    <div class="flex flex-col justify-center items-center space-y-2 px-8 p-4 border border-gray-300 rounded-lg">
+        <div class="p-1 w-10 h-10 flex justify-center items-center">
+            {% if rank == 1 %}
+            <img src="{% static 'images/first-place-color.png' %}" alt="">
+            {% elif rank == 2 %}
+            <img src="{% static 'images/second-place-color.png' %}" alt="">
+            {% elif rank == 3 %}
+            <img src="{% static 'images/third-place-color.png' %}" alt="">
+            {% else %}
+            <div class="text-xl">
+                {{ rank }}
+            </div>
+            {% endif %}
+        </div>
+        <h4 class="uppercase text-sm">
+            Rang
+        </h4>
+    </div>
+</div>
+<div class="md:grid md:grid-cols-2 gap-4 space-y-4 md:space-y-0">
+    <div class="grid grid-cols-3 gap-4">
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ statistics.games }}</div>
+            <h4 class="uppercase text-sm">
+                Spiele
+            </h4>
+        </div>
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ statistics.wins }}</div>
+            <h4 class="uppercase text-sm">
+                Gewonnen
+            </h4>
+        </div>
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ statistics.losses }}</div>
+            <h4 class="uppercase text-sm">
+                Verloren
+            </h4>
+        </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ statistics.points_plus }} : {{ statistics.points_minus }}</div>
+            <h4 class="uppercase text-sm">
+                Punkteverhältnis
+            </h4>
+        </div>
+        <div class="flex flex-col justify-center items-center space-y-2 p-2 md:p-4 border border-gray-300 rounded-lg">
+            <div class="text-xl">{{ score }}</div>
+            <h4 class="uppercase text-sm">
+                Ranglistenpunkte
+            </h4>
+        </div>
+    </div>
+    <div>
+    </div>
+</div>
+{% else %}
+<div class="w-full text-center">Für diesen Zeitraum ist leider keine Statistik vorhanden.</div>
+{% endif %}
+{% endblock %}

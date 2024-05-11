@@ -16,6 +16,7 @@ from .services import (
     calc_month_ranking,
     calc_year_ranking,
     calc_player_stats,
+    get_player_ranking,
     months,
 )
 
@@ -193,7 +194,6 @@ class PlayerStatView(View):
         player = Player.objects.prefetch_related("player_matches__match").get(
             pk=self.kwargs["pk"]
         )
-
         player_stats = calc_player_stats(
             player, month=datetime.now().month, year=datetime.now().year
         )
@@ -202,6 +202,86 @@ class PlayerStatView(View):
             request,
             "player/player_stats.html",
             {"player": player, "player_stats": player_stats},
+        )
+
+
+class StatisticsMonthView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        month = request.GET.get("month", datetime.now().month)
+        year = request.GET.get("year", datetime.now().year)
+
+        player = Player.objects.prefetch_related("player_matches__match").get(
+            pk=self.kwargs["pk"]
+        )
+        statistics = calc_player_stats(player, month=month, year=year)
+
+        if statistics:
+            players = Player.objects.prefetch_related("player_matches__match")
+            players = players.filter(
+                Q(player_matches__match__date__month=month)
+                & Q(player_matches__match__date__year=year)
+            )
+            ranking = calc_month_ranking(players, month=month, year=year)
+            rank, score = get_player_ranking(player, ranking)
+        else:
+            rank = None
+            score = None
+
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
+
+        return render(
+            request,
+            "player/statistics/month.html",
+            {
+                "player": player,
+                "statistics": statistics,
+                "rank": rank,
+                "score": score,
+                "months": months,
+                "selected_month": months.get(str(month)),
+                "years": years,
+                "selected_year": year,
+            },
+        )
+
+
+class StatisticsYearView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        year = request.GET.get("year", datetime.now().year)
+
+        player = Player.objects.prefetch_related("player_matches__match").get(
+            pk=self.kwargs["pk"]
+        )
+
+        statistics = calc_player_stats(player, month=None, year=year)
+
+        if statistics:
+            players = Player.objects.all()
+            ranking = calc_year_ranking(players, year=year)
+            rank, score = get_player_ranking(player, ranking)
+        else:
+            rank = None
+            score = None
+
+        current_year = datetime.now().year
+        years = reversed(range(current_year - 4, current_year + 1))
+
+        return render(
+            request,
+            "player/statistics/year.html",
+            {
+                "player": player,
+                "statistics": statistics,
+                "rank": rank,
+                "score": score,
+                "years": years,
+                "selected_year": year,
+            },
         )
 
 

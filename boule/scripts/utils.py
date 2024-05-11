@@ -8,23 +8,16 @@ from ..services import (
     calc_month_ranking,
     calc_ranking,
     calc_player_stats,
+    get_player_ranking,
 )
 from django.db.models import Q
 
 
 def run():
     year = 2024
-    month = 3
+    month = 1
+    player_one = Player.objects.get(id=4)
     player = Player.objects.all()
-    stats = calc_month_ranking(player, month, year)
-
-    print(stats)
-
-    calc_year_ranking(player, year)
-
-    # total_players = sum([len(players) for rank, players in stats.items()])
-    # print(total_players)
-
-    # for rank, players in stats.items():
-    #     for player, score in players:
-    #         print(player.first_name, score)
+    stats = calc_year_ranking(player, year=year)
+    rank, score = get_player_ranking(player_one, stats)
+    print(rank, score)
