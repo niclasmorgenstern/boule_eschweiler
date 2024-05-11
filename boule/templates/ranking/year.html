@@ -36,8 +36,9 @@
         <div class="p-1 text-start flex-grow flex items-center">Spieler</div>
         <div class="p-1 w-[60px] justify-center flex items-center">Punkte</div>
     </div>
-    {% for rank, info in ranking.items %}
-    <a href="{% url 'player-stats' info.player.id %}"
+    {% for rank, players in ranking.items %}
+    {% for player, score in players %}
+    <a href="{% url 'player-stats' player.id %}"
         class="flex text-lg font-semibold items-center space-x-4 md:space-x-8 rounded hover:bg-gray-100">
         <div class="p-1 w-10 h-10 flex justify-center items-center">
             {% if rank == 1 %}
@@ -51,10 +52,11 @@
             {% endif %}
         </div>
         <div class="p-1 text-start text-lg grow h-6 flex items-center">
-            {{ info.player.first_name }} {{ info.player.last_name|slice:":1" }}
+            {{ player.first_name }} {{ player.last_name|slice:":1" }}
         </div>
-        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ info.score }}</div>
+        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ score }}</div>
     </a>
+    {% endfor %}
     {% endfor %}
 </div>
 {% else %}

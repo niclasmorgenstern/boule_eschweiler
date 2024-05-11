@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from collections import defaultdict
 from datetime import datetime
+import time
 
 from .models import Player, Match, PlayerMatch
 from .forms import PlayerForm, MatchForm
@@ -76,8 +77,8 @@ class RankingMonthView(View):
             {
                 "ranking": ranking,
                 "months": months,
-                "years": years,
                 "selected_month": months.get(str(month)),
+                "years": years,
                 "selected_year": year,
             },
         )
@@ -88,11 +89,16 @@ class RankingYearView(View):
     def get(self, request, *args, **kwargs):
 
         year = request.GET.get("year", datetime.now().year)
-        players = Player.objects.prefetch_related("player_matches__match")
-        players = players.filter(Q(player_matches__match__date__year=year))
+        players = Player.objects.all()
+        # players = Player.objects.prefetch_related("player_matches__match")
+        # players = players.filter(Q(player_matches__match__date__year=year))
 
         if players:
+            start = time.time()
             ranking = calc_year_ranking(players, year=year)
+            end = time.time()
+            duration = end - start
+            print(f"Duration: {duration*1000} ms")
         else:
             ranking = {}
 
@@ -104,7 +110,6 @@ class RankingYearView(View):
             "ranking/year.html",
             {
                 "ranking": ranking,
-                "months": months,
                 "years": years,
                 "selected_year": year,
             },

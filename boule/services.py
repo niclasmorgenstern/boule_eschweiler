@@ -1,4 +1,5 @@
 import math
+import time
 from collections import defaultdict
 
 
@@ -35,7 +36,7 @@ def calc_player_stats(player, month=None, year=None):
     points_plus = 1
     points_minus = 1
     bonus_points = 0
-    player_matches = player.player_matches.all()
+    player_matches = player.player_matches.select_related("match")
 
     if month != "" and month is not None:
         player_matches = player_matches.filter(match__date__month=month)
@@ -88,7 +89,69 @@ def calc_player_stats(player, month=None, year=None):
     return player_stats
 
 
-def calc_ranking(players, month=None, year=None):
+def calc_ranking(scores):
+
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    ranking = defaultdict(list)
+    rank = 0
+    prev_score = None
+    skip_ranks = 1
+    for player, score in sorted_scores:
+        if score != prev_score:
+            rank += skip_ranks
+            skip_ranks = 1
+        else:
+            skip_ranks += 1
+        ranking[rank].append((player, score))
+        prev_score = score
+
+    return dict(ranking)
+
+
+def calc_month_ranking(players, month=None, year=None):
+
+    scores_month = {}
+
+    for player in players:
+        player_stats = calc_player_stats(player, month=month, year=year)
+        if player_stats:
+            scores_month[player] = player_stats["score"]
+
+    ranking_month = calc_ranking(scores_month)
+
+    return ranking_month
+
+
+def calc_year_ranking(players, year=None):
+
+    scores_year = defaultdict(int)
+
+    for month in range(12):
+        ranking_month = calc_month_ranking(players, month=month, year=year)
+        if ranking_month:
+            month_max_points = sum([len(players) for players in ranking_month.values()])
+            for rank, info in ranking_month.items():
+                for player, score in info:
+
+                    match rank:
+                        case 1:
+                            rank_bonus_points = 3
+                        case 2:
+                            rank_bonus_points = 2
+                        case 3:
+                            rank_bonus_points = 1
+                        case _:
+                            rank_bonus_points = 0
+
+                    scores_year[player] += (
+                        month_max_points + 1 - rank + rank_bonus_points
+                    )
+
+    ranking_year = calc_ranking(scores_year)
+    return ranking_year
+
+
+def calc_year_ranking_v2(players, month=None, year=None):
     scores = {}
 
     for player in players:
@@ -102,39 +165,6 @@ def calc_ranking(players, month=None, year=None):
     }
 
     return ranking
-
-
-def calc_month_ranking(players, month=None, year=None):
-    scores = {}
-
-    for player in players:
-        player_stats = calc_player_stats(player, month=month, year=year)
-        if player_stats:
-            scores[player] = player_stats["score"]
-
-    final_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    ranking_month = {
-        rank: {"player": player, "score": score}
-        for rank, (player, score) in enumerate(final_scores, 1)
-    }
-    return ranking_month
-
-
-def calc_year_ranking(players, year=None):
-
-    ranking_year = defaultdict(int)
-    for month in range(12):
-        ranking_month = calc_month_ranking(players, month=month, year=year)
-        if ranking_month:
-            month_max_points = len(ranking_month)
-            for rank, info in ranking_month.items():
-                ranking_year[info["player"]] += month_max_points + 1 - rank
-    ranking_year = sorted(ranking_year.items(), key=lambda x: x[1], reverse=True)
-    ranking_year = {
-        rank: {"player": player, "score": score}
-        for rank, (player, score) in enumerate(ranking_year, 1)
-    }
-    return ranking_year
 
 
 months = {
