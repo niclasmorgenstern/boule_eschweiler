@@ -4,7 +4,7 @@ from collections import defaultdict
 
 
 def calc_ranking_score(wins, losses, points_plus, points_minus):
-    return math.ceil((wins * 2 - losses) * min((points_plus / points_minus), 2))
+    return math.ceil(max((wins * 2 - losses), 0) * min((points_plus / points_minus), 2))
 
 
 def calc_win_bonus(loser_score):
