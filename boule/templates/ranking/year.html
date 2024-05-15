@@ -54,7 +54,7 @@
         <div class="p-1 text-start text-lg grow h-6 flex items-center">
             {{ player.first_name }} {{ player.last_name|slice:":1" }}
         </div>
-        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ score }}</div>
+        <div class="p-1 w-[60px] justify-center text-lg h-6 flex items-center">{{ score|floatformat:2 }}</div>
     </a>
     {% endfor %}
     {% endfor %}
